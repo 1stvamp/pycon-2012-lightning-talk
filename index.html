@@ -1,0 +1,204 @@
+<!doctype html>  
+<html lang="en">
+	
+	<head>
+		<meta charset="utf-8">
+		
+		<title>zc.buildout lightning talk</title>
+
+		<base href="reveal.js/">
+
+		<meta name="description" content="A talk for PyCon UK 2012">
+		<meta name="author" content="Wes Mason">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+		
+		<link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<link rel="stylesheet" href="../css/talk.css">
+
+		<!-- For syntax highlighting -->
+
+		<script>
+			// If the query includes 'print-pdf' we'll use the PDF print sheet
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+	
+	<body>
+		
+		<div class="reveal">
+
+			<!-- Used to fade in a background when a specific slide state is reached -->
+			<div class="state-background"></div>
+			
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+			    <section data-markdown>
+				## zc.buildout for builds and profit
+
+				Wes Mason  
+				
+				[@1stvamp](http://twitter.com/1stvamp)  
+				
+				[www.serverdensity.com](http://www.serverdensity.com/)  
+			    </section>
+			    <section data-markdown id="slide2">
+				## What?
+				- 	 www.buildout.org
+				- 	 Build tool (e.g. like make/cmake/rake)
+				- 	 Started out as Zope/Plone build tool (but don't let that put you off)
+			    </section>
+			    <section>
+				<section data-markdown>
+					## Config files
+					- INI / RFC 822 style
+					- `buildout.cfg`
+				</section>
+				<section data-markdown>
+
+				[buildout]
+				develop = .
+				parts = python
+					test
+					eggs = coverage
+					Django
+
+				[versions]
+				Django = 1.2
+				coverage = 3.5.2
+
+				[python]
+				...
+
+				[test]
+				...
+				</section>
+			    </section>
+			    <section data-markdown>
+				## Dependencies
+				- 	 Install dependencies, version pinning etc.
+				- 	 Sandboxing (like virtualenvs)
+				- 	 Even buildout can be bootstrapped and sandboxed
+				
+						$ python boostrap.py
+						$ bin/buildout
+						</section>
+			    <section>
+				<section data-markdown>
+					## Recipes
+					- 	 Many "recipes" available from PyPi for Python projects with config/setup
+					- 	 Build and install non-Python stuff along side your project
+					- 	 Various tasks for making your project
+				</section>
+				<section data-markdown>
+
+				[buildout]
+				parts = var-dir
+				var-directory = ${buildout:directory}/var
+				
+				[var-dir]
+				recipe = z3c.recipe.mkdir
+				paths = ${buildout:var-directory}/celery
+				</section>
+			    </section>
+			    <section>
+			    	<section data-markdown>
+					## bin scripts
+					- 	 Wrap console scripts in sandboxed `bin/` dir
+					- 	 buildout will do this automatically
+					- 	 You can also create special wrappers yourself:
+						- 	 `zc.recipe.egg`
+						- 	 `z3c.recipe.scripts`
+					- 	 Even interpreters
+				</section>
+				<section data-markdown>
+
+				[python]
+				recipe = z3c.recipe.scripts:interpreter
+				eggs = ${buildout:eggs}
+				extra-paths = ${buildout:directory}/src/myapp/somemodule
+				script-initialization = os.environ['PROJ_ENV'] = "${config:environment}"
+				</section>
+			    </section>
+			    <section>
+			    	<section data-markdown>
+					## Config files (again)
+					- 	 Extendable configs
+					- 	 Lets you create configs for specific setups
+					- 	 `production.cfg`
+			    	</section>
+				<section data-markdown>
+
+				[buildout]
+				find-links = 
+					http://my-private-pypi.somecompany.com/
+				extends = buildout.cfg
+
+				[config]
+				environment = production
+				</section>
+				<section data-markdown>
+
+				$ bin/buildout -c production.cfg]
+				$ bin/python
+				
+				Python 2.7.1
+				>>> import os
+				>>> os.environ['PROJ_ENV']
+				'production'
+				</section>
+			    </section>
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+			</aside>
+
+			<!-- Presentation progress bar -->
+			<div class="progress"><span></span></div>
+			
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+			
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				overview: true,
+				rollingLinks: false,
+				
+				theme: Reveal.getQueryHash().theme || 'default', // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/linear(2d)
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: '../lib/js/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'lib/js/data-markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: '/socket.io/socket.io.js', async: true, condition: function() { return window.location.host === 'localhost:1947'; } },
+					{ src: 'plugin/speakernotes/client.js', async: true, condition: function() { return window.location.host === 'localhost:1947'; } },
+				]
+			});
+			
+		</script>
+
+	</body>
+</html>
