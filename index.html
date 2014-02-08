@@ -140,6 +140,7 @@
 				[buildout]
 				find-links = 
 					http://my-private-pypi.somecompany.com/
+
 				extends = buildout.cfg
 
 				[config]
@@ -148,11 +149,12 @@
 				<section data-markdown>
 
 				$ bin/buildout -c production.cfg
+				...
 				$ bin/python
 				
 				Python 2.7.1
-				>>> import os
-				>>> os.environ['PROJ_ENV']
+				&gt;&gt;&gt; import os
+				&gt;&gt;&gt; os.environ['PROJ_ENV']
 				'production'
 				</section>
 			    </section>

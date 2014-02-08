@@ -26,3 +26,7 @@ section {
 .reveal a {
     color: #767676 !important;
 }
+
+pre {
+    font-size: 110%;
+}
